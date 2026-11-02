@@ -32,6 +32,8 @@ import {
 // ----------------------------------------------------
 
 const ESTADOS = {
+ en_contacto:{label:'En contacto',className:'border-blue-200 bg-blue-50 text-blue-700',icon:CalendarDays},
+ encuentro:{label:'Encuentro',className:'border-blue-200 bg-blue-50 text-blue-700',icon:CalendarDays},
   pendiente: {
     label: "Pendiente",
     className:

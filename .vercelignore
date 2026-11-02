@@ -1,0 +1,11 @@
+# Publish the application source; runtime configuration comes from Vercel.
+.git
+.env
+.env.*
+node_modules
+dist
+dist-ssr
+artifacts
+*.log
+lint-adopciones.txt
+ADOPCIONES.md

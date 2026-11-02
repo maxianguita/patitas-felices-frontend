@@ -1,3 +1,4 @@
+import RequestActions from './RequestActions';
 // src/admin/DetalleSolicitud.jsx
 
 import {
@@ -44,6 +45,8 @@ import {
 // ----------------------------------------------------
 
 const ESTADOS = {
+  en_contacto:{label:'En contacto',className:'border-blue-200 bg-blue-50 text-blue-700',icon:Clock},
+  encuentro:{label:'Encuentro',className:'border-blue-200 bg-blue-50 text-blue-700',icon:Clock},
   pendiente: {
     label: "Pendiente",
     className:
@@ -1060,8 +1063,7 @@ export default function DetalleSolicitud() {
               </h3>
 
               {/* Pendiente */}
-              {solicitud.estado ===
-                "pendiente" && (
+              {['pendiente','en_contacto','encuentro'].includes(solicitud.estado) && (
 
                 <div className="space-y-3">
 
@@ -1219,6 +1221,6 @@ export default function DetalleSolicitud() {
         }
       />
 
-    </main>
+    <RequestActions id={id} estado={solicitud?.estado} onUpdated={cargarSolicitud}/></main>
   );
 }

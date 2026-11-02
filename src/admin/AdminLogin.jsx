@@ -149,10 +149,7 @@ export default function AdminLogin() {
         password
       );
 
-      console.log(
-        "Respuesta del login:",
-        respuesta
-      );
+
 
       const tokenRecibido =
         obtenerToken(respuesta);
@@ -192,13 +189,10 @@ export default function AdminLogin() {
         )
       );
 
-      console.log(
-        "Usuario guardado:",
-        usuarioRecibido
-      );
+
 
       navigate(
-        "/admin/animales",
+        usuarioRecibido?.rol==='superadmin'?'/admin/comunidad':'/admin/animales',
         {
           replace: true,
         }

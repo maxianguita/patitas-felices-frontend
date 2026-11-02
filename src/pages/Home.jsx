@@ -26,6 +26,7 @@ import {
 } from "lucide-react";
 
 import MapaAdopcion from "../components/MapaAdopcion";
+import AvisosInicio from "../components/AvisosInicio";
 
 import {
   obtenerAnimalesPublicos,
@@ -274,7 +275,7 @@ const AnimalesDestacados = ({
               )}
 
               <Link
-                to="/adoptar"
+                to={`/adoptar/${animal.id}`}
                 className="flex w-full items-center justify-center gap-2 rounded-xl bg-[#FF7A47] px-6 py-3 font-bold text-white transition duration-300 hover:bg-orange-600"
               >
                 <Heart className="h-5 w-5" />
@@ -293,97 +294,12 @@ const AnimalesDestacados = ({
 // -----------------------------------------------------------------------------
 
 const CasosUrgentes = () => {
-  const casosUrgentes = [
-    {
-      id: 1,
-      nombre: "Atención veterinaria",
-      descripcion:
-        "Consultas, estudios y tratamientos para animales rescatados.",
-    },
-    {
-      id: 2,
-      nombre: "Alimentación y recuperación",
-      descripcion:
-        "Alimento balanceado, dietas especiales y suplementos.",
-    },
-    {
-      id: 3,
-      nombre: "Medicamentos y traslados",
-      descripcion:
-        "Medicamentos esenciales y traslados a centros veterinarios.",
-    },
-  ];
-
-  return (
-    <div className="rounded-xl p-6">
-      <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
-        {casosUrgentes.map((caso) => (
-          <article
-            key={caso.id}
-            className="flex flex-col rounded-2xl border border-red-100 bg-white p-6 shadow-sm transition duration-300 hover:-translate-y-1 hover:border-red-200 hover:shadow-lg"
-          >
-            <div className="mb-5 flex h-14 w-14 items-center justify-center rounded-2xl bg-red-50">
-              <ShieldAlert className="h-7 w-7 text-red-500" />
-            </div>
-
-            <h3 className="text-xl font-bold text-gray-900">
-              {caso.nombre}
-            </h3>
-
-            <p className="mt-3 flex-1 leading-6 text-gray-600">
-              {caso.descripcion}
-            </p>
-
-            <Link
-              to="/donar"
-              className="mt-6 inline-flex items-center font-bold text-[#FF7A47] transition hover:text-orange-600"
-            >
-              Colaborar con esta necesidad →
-            </Link>
-          </article>
-        ))}
-      </div>
-    </div>
-  );
-
-  return (
-    <div className="rounded-xl p-6 text-center">
-      <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
-        {casosUrgentes.map((caso) => (
-          <article
-            key={caso.id}
-            className="rounded-xl border border-gray-100 bg-white p-4 shadow-md transition duration-300 hover:border-[#FF7A47]/50 hover:shadow-lg"
-          >
-            <div className="mb-3 flex h-24 w-full items-center justify-center rounded-lg bg-gray-100">
-              <ShieldAlert className="h-8 w-8 animate-pulse text-red-500" />
-            </div>
-
-            <p className="text-sm font-bold text-gray-800">
-              {caso.nombre}
-            </p>
-
-            <p className="mt-1 text-xs text-gray-500">
-              {caso.descripcion}
-            </p>
-
-            <div className="mt-3 h-2 w-full overflow-hidden rounded-full bg-gray-200">
-              <div
-                className="h-full rounded-full bg-[#FF7A47]"
-                style={{
-                  width:
-                    `${caso.progreso}%`,
-                }}
-              />
-            </div>
-
-            <p className="mt-1 text-xs font-semibold text-[#FF7A47]">
-              Necesidad urgente
-            </p>
-          </article>
-        ))}
-      </div>
-    </div>
-  );
+ const [items,setItems]=useState([]),[error,setError]=useState(''),[loading,setLoading]=useState(true);
+ useEffect(()=>{let active=true;obtenerAnimalesPublicos({estado:'urgencia_medica',pageSize:3}).then(data=>{if(active)setItems(data.items||[]);}).catch(()=>{if(active)setError('No pudimos cargar los casos urgentes.');}).finally(()=>{if(active)setLoading(false);});return()=>{active=false;};},[]);
+ if(loading)return <p role="status">Cargando casos urgentes...</p>;
+ if(error)return <p role="alert">{error}</p>;
+ if(!items.length)return <div className="rounded-2xl border p-7 text-center"><p>No hay urgencias médicas publicadas en este momento.</p><Link to="/necesidades" className="mt-3 inline-block text-green-700 underline">Ver otras formas de ayudar</Link></div>;
+ return <div className="grid gap-5 md:grid-cols-3">{items.map(animal=><article key={animal.id} className="rounded-2xl border p-6"><h3 className="text-xl font-bold">{animal.nombre}</h3><p className="my-3">{animal.estadoSalud||animal.historia||'Consultá a su organización cómo colaborar.'}</p><Link to={`/adoptar/${animal.id}`} className="text-green-700 underline">Conocer el caso</Link></article>)}</div>;
 };
 
 // -----------------------------------------------------------------------------
@@ -503,7 +419,10 @@ const Home = () => {
   }, []);
 
   return (
-    <div className="min-h-screen bg-white font-sans">
+    <main className="min-h-screen bg-white font-sans">
+      <section className="border-b border-orange-100 bg-orange-50 px-5 py-5">
+        <div className="mx-auto flex max-w-7xl flex-col gap-4 sm:flex-row sm:items-center sm:justify-between"><div><p className="font-bold text-slate-900">¿Perdiste o encontraste un perro o un gato?</p><p className="mt-1 text-sm text-slate-600">Publicá una foto y una zona de referencia para que la comunidad pueda ayudar.</p></div><div className="flex flex-wrap gap-3"><Link to="/avisos/nuevo?categoria=perdido" className="inline-flex min-h-12 items-center justify-center rounded-xl border border-green-700 bg-white px-5 py-3 font-bold text-green-800">Perdí a mi mascota</Link><Link to="/avisos/nuevo" className="inline-flex min-h-12 items-center justify-center rounded-xl bg-orange-600 px-5 py-3 font-bold text-white">Encontré un animal</Link></div></div>
+      </section>
       {/* HERO */}
       <section className="bg-gray-50 py-24 sm:py-32">
         <div className="mx-auto flex max-w-7xl flex-col items-center gap-12 px-4 sm:px-6 lg:flex-row lg:px-8">
@@ -556,6 +475,8 @@ const Home = () => {
           </div>
         </div>
       </section>
+
+      <AvisosInicio />
 
       {/* MISIÓN */}
       <section className="bg-white py-20">
@@ -757,7 +678,7 @@ const Home = () => {
           setIsModalOpen(false)
         }
       />
-    </div>
+    </main>
   );
 };
 

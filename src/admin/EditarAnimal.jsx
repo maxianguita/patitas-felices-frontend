@@ -1,3 +1,6 @@
+import AnimalNeeds from './AnimalNeeds';
+import AnimalFields from './AnimalFields';
+import {extraDefaults} from './animalDefaults';
 // src/admin/EditarAnimal.jsx
 
 import {
@@ -29,6 +32,7 @@ import {
 } from "../service/animalesServide";
 
 const FORM_INICIAL = {
+  ...extraDefaults,
   nombre: "",
   tipo: "perro",
   estado: "disponible",
@@ -153,6 +157,8 @@ export default function EditarAnimal() {
         }
 
         setForm({
+          ...extraDefaults,...animal,
+          fotosExistentes:animal.fotos||[],fotosNuevas:[],
           nombre:
             animal.nombre || "",
 
@@ -407,6 +413,7 @@ export default function EditarAnimal() {
       setIsLoading(true);
 
       await actualizarAnimal(id, {
+        ...form,
         nombre:
           form.nombre.trim(),
 
@@ -801,13 +808,14 @@ export default function EditarAnimal() {
 
                   <span className="mt-1 block text-xs leading-5 text-slate-500">
                     {form.estado === "adoptado"
-                      ? "Los animales adoptados no se mostrarán en la página pública."
+                      ? "La historia adoptada solo se mostrará si autorizás su publicación más abajo."
                       : "El animal aparecerá en la página pública de adopciones."}
                   </span>
                 </span>
               </label>
             </section>
 
+            <AnimalFields form={form} setForm={setForm}/>
             {/* Acciones */}
             <div className="flex flex-col-reverse gap-3 border-t border-slate-100 pt-6 sm:flex-row sm:justify-end">
               <Link
@@ -839,6 +847,7 @@ export default function EditarAnimal() {
               </button>
             </div>
           </form>
+          <AnimalNeeds animalId={id}/>
         </section>
       </div>
     </main>

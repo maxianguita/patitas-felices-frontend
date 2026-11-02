@@ -120,10 +120,13 @@ const createRequestConfig = (
 // ----------------------------------------------------
 
 const request = async (url, options = {}) => {
+  const controller=new AbortController();
+  const timeout=setTimeout(()=>controller.abort(),20000);
   try {
     const response = await fetch(url, {
       credentials: "include",
       ...options,
+      signal:controller.signal,
     });
 
     const data = await parseMaybeJson(response);
@@ -171,6 +174,7 @@ const request = async (url, options = {}) => {
       const publicAdminRoutes = [
         "/admin/login",
         "/admin/Change-password",
+        "/admin/restablecer-password",
         "/admin/registrar-organizacion",
       ];
 
@@ -183,6 +187,8 @@ const request = async (url, options = {}) => {
     }
 
     throw error;
+  } finally {
+    clearTimeout(timeout);
   }
 };
 

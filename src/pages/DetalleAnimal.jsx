@@ -1,3 +1,7 @@
+import {AdopcionModal} from './Animales';
+import {crearSolicitudAdopcion} from '../service/solicitudesService';
+import FavoriteButton from '../components/FavoriteButton';
+import AnimalExtras from '../components/AnimalExtras';
 // src/pages/DetalleAnimal.jsx
 
 import {
@@ -124,6 +128,7 @@ const InformacionSalud = ({
 };
 
 export default function DetalleAnimal() {
+  const [adopcionAbierta,setAdopcionAbierta]=useState(false);
   const { id } = useParams();
 
   const [animal, setAnimal] =
@@ -233,7 +238,7 @@ export default function DetalleAnimal() {
       : Dog;
 
   const puedeAdoptarse =
-    animal.estado !== "adoptado";
+    animal.estado === "disponible" && !animal.adoptado;
 
   const organizacion =
     animal.organizacion;
@@ -250,6 +255,8 @@ export default function DetalleAnimal() {
           Volver a adopciones
         </Link>
 
+        <div className="my-6 flex flex-wrap items-center gap-4"><FavoriteButton id={animal.id}/>{organizacion?.id&&<Link to={`/organizaciones/${organizacion.id}`} className="text-sm font-semibold text-green-700 underline">{organizacion.nombre}{organizacion.verificada?' · Verificada':''}</Link>}</div>
+        {adopcionAbierta&&<AdopcionModal animal={animal} onClose={()=>setAdopcionAbierta(false)} onSubmit={crearSolicitudAdopcion}/>}
         {/* Información principal */}
         <section className="overflow-hidden rounded-3xl border border-gray-100 bg-white shadow-xl">
           <div className="grid lg:grid-cols-2">
@@ -372,22 +379,10 @@ export default function DetalleAnimal() {
               {/* Acción */}
               <div className="mt-auto pt-9">
                 {puedeAdoptarse ? (
-                  <Link
-                    to="/contacto"
-                    state={{
-                      animalId: animal.id,
-                      animalNombre:
-                        animal.nombre,
-                    }}
-                    className="flex w-full items-center justify-center gap-3 rounded-2xl bg-[#FF7A47] px-6 py-4 text-lg font-black text-white shadow-lg shadow-orange-500/20 transition hover:-translate-y-0.5 hover:bg-orange-600"
-                  >
-                    <Heart className="h-6 w-6 fill-white" />
-                    Quiero adoptar a{" "}
-                    {animal.nombre}
-                  </Link>
+                  <button type="button" onClick={()=>setAdopcionAbierta(true)} className="flex w-full items-center justify-center gap-3 rounded-2xl bg-[#FF7A47] px-6 py-4 text-lg font-black text-white hover:bg-orange-600"><Heart className="h-6 w-6"/>Quiero adoptar a {animal.nombre}</button>
                 ) : (
                   <div className="rounded-2xl border border-gray-200 bg-gray-100 px-6 py-4 text-center font-bold text-gray-500">
-                    Este animal ya fue adoptado
+                    Este animal no está disponible para adoptar en este momento
                   </div>
                 )}
 
@@ -401,6 +396,7 @@ export default function DetalleAnimal() {
           </div>
         </section>
 
+        <div className="mt-8"><AnimalExtras animal={animal}/></div>
         {/* Información complementaria */}
         <div className="mt-8 grid gap-8 lg:grid-cols-3">
           {/* Salud */}
@@ -442,7 +438,7 @@ export default function DetalleAnimal() {
                 texto={
                   animal.vacunado
                     ? "Vacunado"
-                    : "Vacunación pendiente"
+                    : "Vacunación sin confirmar"
                 }
               />
 
@@ -453,7 +449,7 @@ export default function DetalleAnimal() {
                 texto={
                   animal.castrado
                     ? "Castrado"
-                    : "Castración pendiente"
+                    : "Castración sin confirmar"
                 }
               />
 
@@ -464,7 +460,7 @@ export default function DetalleAnimal() {
                 texto={
                   animal.desparasitado
                     ? "Desparasitado"
-                    : "Desparasitación pendiente"
+                    : "Desparasitación sin confirmar"
                 }
               />
             </div>

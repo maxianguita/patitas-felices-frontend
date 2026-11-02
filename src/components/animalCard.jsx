@@ -1,3 +1,4 @@
+import {shareAnimalUrl} from '../lib/adoption';
 import { useState } from "react";
 
 import {
@@ -229,7 +230,7 @@ export default function AnimalCard({
     a.estado === "disponible";
 
   const shareUrl =
-    `${window.location.origin}/adoptar`;
+    shareAnimalUrl(a.id);
 
   const shareText =
     `Conocé a ${a.nombre} 🐾 Está buscando una familia en Patitas Felices.`;

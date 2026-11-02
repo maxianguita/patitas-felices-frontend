@@ -20,6 +20,7 @@ import {
   RefreshCw,
   Trash2,
   ClipboardList,
+  X,
 } from "lucide-react";
 
 import {
@@ -112,6 +113,11 @@ export default function PanelAnimales() {
     setProcesandoAnimalId,
   ] = useState(null);
 
+  const [
+    animalParaAdoptar,
+    setAnimalParaAdoptar,
+  ] = useState(null);
+
   // --------------------------------------------------
   // Cargar animales de la organización
   // --------------------------------------------------
@@ -173,45 +179,51 @@ export default function PanelAnimales() {
   // Marcar como adoptado
   // --------------------------------------------------
 
-  const handleMarcarAdoptado =
-    async (animal) => {
-      const confirmar =
-        window.confirm(
-          `¿Querés marcar a ${animal.nombre} como adoptado?`
-        );
+  const abrirModalAdopcion = (animal) => {
+    setAnimalParaAdoptar(animal);
+  };
 
-      if (!confirmar) {
-        return;
-      }
+  const cerrarModalAdopcion = () => {
+    if (procesandoAnimalId) {
+      return;
+    }
 
-      try {
-        setProcesandoAnimalId(
-          animal.id
-        );
+    setAnimalParaAdoptar(null);
+  };
 
-        setError("");
+  const confirmarAdopcion = async () => {
+    if (!animalParaAdoptar) {
+      return;
+    }
 
-        await marcarAnimalComoAdoptado(
-          animal.id
-        );
+    try {
+      setProcesandoAnimalId(
+        animalParaAdoptar.id
+      );
 
-        await cargarAnimales();
-      } catch (requestError) {
-        console.error(
-          "Error marcando animal como adoptado:",
-          requestError
-        );
+      setError("");
 
-        setError(
-          requestError.message ||
-            "No se pudo actualizar el estado del animal."
-        );
-      } finally {
-        setProcesandoAnimalId(
-          null
-        );
-      }
-    };
+      await marcarAnimalComoAdoptado(
+        animalParaAdoptar.id
+      );
+
+      setAnimalParaAdoptar(null);
+
+      await cargarAnimales();
+    } catch (requestError) {
+      console.error(
+        "Error marcando animal como adoptado:",
+        requestError
+      );
+
+      setError(
+        requestError.message ||
+          "No se pudo actualizar el estado del animal."
+      );
+    } finally {
+      setProcesandoAnimalId(null);
+    }
+  };
 
   // --------------------------------------------------
   // Eliminar
@@ -513,7 +525,7 @@ export default function PanelAnimales() {
                           <button
                             type="button"
                             onClick={() =>
-                              handleMarcarAdoptado(
+                              abrirModalAdopcion(
                                 animal
                               )
                             }
@@ -570,6 +582,102 @@ export default function PanelAnimales() {
         )}
 
       </section>
+
+
+      {/* Modal confirmar adopción */}
+      {animalParaAdoptar && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="titulo-modal-adopcion"
+          onMouseDown={(event) => {
+            if (event.target === event.currentTarget) {
+              cerrarModalAdopcion();
+            }
+          }}
+        >
+          <div className="w-full max-w-md rounded-3xl bg-white p-6 shadow-2xl">
+            <div className="flex items-start justify-between gap-4">
+              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-green-100">
+                <CheckCircle2 className="h-6 w-6 text-green-700" />
+              </div>
+
+              <button
+                type="button"
+                onClick={cerrarModalAdopcion}
+                disabled={
+                  procesandoAnimalId ===
+                  animalParaAdoptar.id
+                }
+                className="rounded-lg p-2 text-gray-400 transition hover:bg-gray-100 hover:text-gray-700 disabled:cursor-not-allowed disabled:opacity-50"
+                aria-label="Cerrar"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+
+            <div className="mt-5">
+              <h2
+                id="titulo-modal-adopcion"
+                className="text-2xl font-black text-gray-900"
+              >
+                ¿Marcar como adoptado?
+              </h2>
+
+              <p className="mt-3 leading-6 text-gray-600">
+                ¿Confirmás que{" "}
+                <span className="font-bold text-gray-900">
+                  {animalParaAdoptar.nombre}
+                </span>{" "}
+                fue adoptado?
+              </p>
+
+              <p className="mt-2 text-sm leading-5 text-gray-500">
+                Al continuar, dejará de aparecer en el
+                listado público de adopciones.
+              </p>
+            </div>
+
+            <div className="mt-7 flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
+              <button
+                type="button"
+                onClick={cerrarModalAdopcion}
+                disabled={
+                  procesandoAnimalId ===
+                  animalParaAdoptar.id
+                }
+                className="rounded-xl border border-gray-300 bg-white px-5 py-3 font-bold text-gray-700 transition hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                Cancelar
+              </button>
+
+              <button
+                type="button"
+                onClick={confirmarAdopcion}
+                disabled={
+                  procesandoAnimalId ===
+                  animalParaAdoptar.id
+                }
+                className="inline-flex items-center justify-center gap-2 rounded-xl bg-green-600 px-5 py-3 font-bold text-white transition hover:bg-green-700 disabled:cursor-not-allowed disabled:opacity-60"
+              >
+                {procesandoAnimalId ===
+                animalParaAdoptar.id ? (
+                  <>
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                    Guardando...
+                  </>
+                ) : (
+                  <>
+                    <CheckCircle2 className="h-4 w-4" />
+                    Sí, marcar como adoptado
+                  </>
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </main>
   );
 }

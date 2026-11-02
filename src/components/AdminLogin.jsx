@@ -16,7 +16,7 @@ export default function AdminLogin() {
     try {
       await login(email, password);
       nav("/admin/animales");
-    } catch (e) {
+    } catch {
       setErr("Invalid email or password.");
     }
   };

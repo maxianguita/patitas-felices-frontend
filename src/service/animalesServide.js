@@ -15,6 +15,7 @@ const crearFormDataAnimal = (datos) => {
   const formData = new FormData();
 
   const campos = [
+    'edadMeses','videoUrl','compatibleNinios','compatiblePerros','compatibleGatos','historiaPublica','historiaAdopcion',
     "nombre",
     "estado",
     "tipo",
@@ -60,6 +61,8 @@ const crearFormDataAnimal = (datos) => {
     );
   }
 
+  if(Array.isArray(datos.fotosExistentes))formData.append('fotosExistentes',JSON.stringify(datos.fotosExistentes));
+  for(const file of datos.fotosNuevas||[])if(file instanceof File)formData.append('fotos',file);
   return formData;
 };
 

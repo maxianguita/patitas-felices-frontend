@@ -1,3 +1,4 @@
+import {API_URL} from '../lib/adoption';
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
@@ -39,88 +40,7 @@ L.Icon.Default.mergeOptions({
 // Estos refugios son de ejemplo. Más adelante pueden venir desde el backend.
 // -----------------------------------------------------------------------------
 
-const refugios = [
-  {
-    id: 1,
-    nombre: "Patitas Glew",
-    zona: "Glew",
-    direccion: "Glew, Buenos Aires",
-    latitud: -34.889,
-    longitud: -58.378,
-    perros: 12,
-    gatos: 6,
-  },
-  {
-    id: 2,
-    nombre: "Refugio Adrogué",
-    zona: "Adrogué",
-    direccion: "Adrogué, Buenos Aires",
-    latitud: -34.801,
-    longitud: -58.391,
-    perros: 8,
-    gatos: 10,
-  },
-  {
-    id: 3,
-    nombre: "Huellitas de Lomas",
-    zona: "Lomas de Zamora",
-    direccion: "Lomas de Zamora, Buenos Aires",
-    latitud: -34.761,
-    longitud: -58.398,
-    perros: 15,
-    gatos: 4,
-  },
-  {
-    id: 4,
-    nombre: "Refugio Temperley",
-    zona: "Temperley",
-    direccion: "Temperley, Buenos Aires",
-    latitud: -34.767,
-    longitud: -58.38,
-    perros: 9,
-    gatos: 7,
-  },
-  {
-    id: 5,
-    nombre: "Hogar de Tránsito Banfield",
-    zona: "Banfield",
-    direccion: "Banfield, Buenos Aires",
-    latitud: -34.744,
-    longitud: -58.404,
-    perros: 6,
-    gatos: 11,
-  },
-  {
-    id: 6,
-    nombre: "Refugio Monte Grande",
-    zona: "Monte Grande",
-    direccion: "Monte Grande, Buenos Aires",
-    latitud: -34.815,
-    longitud: -58.468,
-    perros: 14,
-    gatos: 5,
-  },
-  {
-    id: 7,
-    nombre: "Patitas de Burzaco",
-    zona: "Burzaco",
-    direccion: "Burzaco, Buenos Aires",
-    latitud: -34.827,
-    longitud: -58.395,
-    perros: 10,
-    gatos: 8,
-  },
-  {
-    id: 8,
-    nombre: "Refugio Longchamps",
-    zona: "Longchamps",
-    direccion: "Longchamps, Buenos Aires",
-    latitud: -34.856,
-    longitud: -58.388,
-    perros: 7,
-    gatos: 6,
-  },
-];
+
 
 // -----------------------------------------------------------------------------
 // AJUSTA EL MAPA SEGÚN LOS RESULTADOS
@@ -166,6 +86,9 @@ function AjustarMapa({ refugiosVisibles }) {
 
 export default function MapaAdopcion() {
   const navigate = useNavigate();
+  const [refugios,setRefugios]=useState([]);
+  const [mapError,setMapError]=useState('');
+  useEffect(()=>{let active=true;fetch(API_URL+'/api/organizaciones').then(r=>{if(!r.ok)throw Error('No se pudieron cargar las organizaciones.');return r.json();}).then(data=>{if(active)setRefugios(data.filter(org=>Number.isFinite(org.latitud)&&Number.isFinite(org.longitud)));}).catch(e=>{if(active)setMapError(e.message);});return()=>{active=false;};},[]);
 
   const [busqueda, setBusqueda] = useState("");
   const [refugioSeleccionado, setRefugioSeleccionado] = useState(null);
@@ -184,7 +107,7 @@ export default function MapaAdopcion() {
         refugio.direccion.toLowerCase().includes(texto)
       );
     });
-  }, [busqueda]);
+  }, [busqueda,refugios]);
 
   useEffect(() => {
     if (
@@ -213,11 +136,13 @@ export default function MapaAdopcion() {
   };
 
   const verAnimales = (refugio) => {
-    navigate(`/adopciones?refugio=${refugio.id}`);
+    navigate(`/adoptar?organizacion=${refugio.id}`);
   };
 
   return (
     <section className="w-full">
+      {mapError&&<p role="alert" className="mb-4 text-red-700">{mapError}</p>}
+      {!refugios.length&&!mapError&&<p className="mb-4 text-sm text-slate-500">Todavía no hay organizaciones con ubicación pública. Los hogares de tránsito mantienen su dirección privada.</p>}
       {/* BUSCADOR */}
       <div className="mb-5 rounded-2xl border border-gray-200 bg-white p-4 shadow-sm">
         <div className="flex flex-col gap-4 md:flex-row md:items-end">

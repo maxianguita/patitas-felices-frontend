@@ -6,13 +6,13 @@ import { Users, Trash2, CheckCircle, Clock, PawPrint } from 'lucide-react';
 
 
 // Variables globales proporcionadas por el entorno de Canvas (MANDATORIO USAR)
-const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
-const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
-const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+const appId = typeof globalThis.__app_id !== 'undefined' ? globalThis.__app_id : 'default-app-id';
+const firebaseConfig = typeof globalThis.__firebase_config !== 'undefined' ? JSON.parse(globalThis.__firebase_config) : {};
+const initialAuthToken = typeof globalThis.__initial_auth_token !== 'undefined' ? globalThis.__initial_auth_token : null;
 
 // Colores temáticos
 const colorPrimary = "bg-[#2E7D32]"; // Verde Oscuro
-const colorAccent = "bg-[#FF7A47]"; // Naranja
+const COLOR_ACCENT = "bg-[#FF7A47]"; // Naranja
 
 // Estados de la solicitud
 const ESTATUS = {
@@ -24,7 +24,7 @@ const ESTATUS = {
 // Componente principal del Panel de Administración
 const AdminPanel = () => {
     const [db, setDb] = useState(null);
-    const [auth, setAuth] = useState(null);
+    const [, setAuth] = useState(null);
     const [currentUser, setCurrentUser] = useState(null);
     const [isAuthReady, setIsAuthReady] = useState(false);
     const [loading, setLoading] = useState(true);

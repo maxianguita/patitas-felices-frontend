@@ -1,0 +1,22 @@
+export const extraDefaults = {
+  sexo: '',
+  edad: '',
+  edadMeses: '',
+  tamanio: '',
+  raza: '',
+  localidad: '',
+  personalidad: '',
+  estadoSalud: '',
+  requisitos: '',
+  videoUrl: '',
+  vacunado: false,
+  castrado: false,
+  desparasitado: false,
+  compatibleNinios: 'sin_evaluar',
+  compatiblePerros: 'sin_evaluar',
+  compatibleGatos: 'sin_evaluar',
+  historiaPublica: false,
+  historiaAdopcion: '',
+  fotosExistentes: [],
+  fotosNuevas: []
+};

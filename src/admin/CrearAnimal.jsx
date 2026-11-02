@@ -1,3 +1,5 @@
+import AnimalFields from './AnimalFields';
+import {extraDefaults} from './animalDefaults';
 // src/admin/CrearAnimal.jsx
 
 import { useEffect, useRef, useState } from "react";
@@ -15,6 +17,7 @@ import {
 import { crearAnimal } from "../service/animalesServide";
 
 const FORM_INICIAL = {
+  ...extraDefaults,
   nombre: "",
   tipo: "perro",
   estado: "disponible",
@@ -158,6 +161,7 @@ export default function CrearAnimal() {
       setIsLoading(true);
 
       await crearAnimal({
+        ...form,
         nombre: form.nombre.trim(),
         tipo: form.tipo,
         estado: form.estado,
@@ -483,13 +487,14 @@ export default function CrearAnimal() {
 
                   <span className="mt-1 block text-xs leading-5 text-slate-500">
                     {form.estado === "adoptado"
-                      ? "Los animales adoptados no se mostrarán en la página pública."
+                      ? "La historia adoptada solo se mostrará si autorizás su publicación más abajo."
                       : "El animal aparecerá en la página pública de adopciones."}
                   </span>
                 </span>
               </label>
             </section>
 
+            <AnimalFields form={form} setForm={setForm}/>
             {/* Acciones */}
             <div className="flex flex-col-reverse gap-3 border-t border-slate-100 pt-6 sm:flex-row sm:justify-end">
               <Link

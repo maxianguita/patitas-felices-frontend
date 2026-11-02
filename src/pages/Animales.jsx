@@ -1,3 +1,5 @@
+import {rememberActivity} from '../lib/activity';
+import {shareAnimalUrl} from '../lib/adoption';
 import {
   useEffect,
   useState,
@@ -218,7 +220,7 @@ const MensajePopup = ({
 // MODAL PÚBLICO DE ADOPCIÓN
 // ====================================================
 
-const AdopcionModal = ({
+export const AdopcionModal = ({
   animal,
   onClose,
   onSubmit,
@@ -234,6 +236,7 @@ const AdopcionModal = ({
     aceptaContacto: false,
   });
 
+  const [seguimiento,setSeguimiento]=useState('');
   const [enviando, setEnviando] =
     useState(false);
 
@@ -269,7 +272,7 @@ const AdopcionModal = ({
 
       document.body.style.overflow = "";
     };
-  }, [onClose]);
+  }, [onClose,enviando]);
 
   const handleChange = (event) => {
     const {
@@ -305,12 +308,14 @@ const AdopcionModal = ({
     try {
       setEnviando(true);
 
-      await onSubmit({
+      const response=await onSubmit({
         animalId: animal.id,
         animalNombre: animal.nombre,
         ...form,
       });
 
+      if(response?.seguimientoUrl)rememberActivity(response.seguimientoUrl,'Solicitud para '+animal.nombre);
+      setSeguimiento(response?.seguimientoUrl||'');
       setEnviado(true);
     } catch (submitError) {
       console.error(
@@ -396,6 +401,8 @@ const AdopcionModal = ({
               <h3 className="text-2xl font-bold text-gray-900">
                 Solicitud enviada
               </h3>
+              <Link to="/mi-actividad" className="mt-3 text-sm font-semibold text-green-700 underline">Mis avisos y solicitudes</Link>
+              {seguimiento&&<div className="mt-5 rounded-xl bg-green-50 p-4"><a href={seguimiento} className="font-bold text-green-800 underline">Seguir mi solicitud</a><p className="mt-2 text-sm text-green-800">Guardá este enlace privado. Si configuramos el correo, también lo recibirás por email.</p></div>}
 
               <p className="mt-3 max-w-md text-gray-600">
                 Recibimos tu solicitud para
@@ -731,7 +738,7 @@ const AnimalCard = ({
     animal.estado === "disponible";
 
   const shareUrl =
-    `${window.location.origin}/adoptar`;
+    shareAnimalUrl(animal.id);
 
   const shareText =
     `Conocé a ${animal.nombre} 🐾 Está buscando una familia.`;
@@ -1090,10 +1097,7 @@ export default function Animales() {
         solicitud
       );
 
-    console.log(
-      "Solicitud creada correctamente:",
-      respuesta
-    );
+
 
     return respuesta;
   } catch (error) {

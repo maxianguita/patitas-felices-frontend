@@ -52,7 +52,7 @@ export default function RegistrarOrganizacion() {
     event.preventDefault();
 
     setError("");
-    setMensaje("");
+    setMensaje('Recibimos el registro. La organización debe ser aprobada antes de poder iniciar sesión y publicar animales.');
 
     if (form.password.length < 8) {
       setError("La contraseña debe tener al menos 8 caracteres.");

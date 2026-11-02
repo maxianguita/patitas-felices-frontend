@@ -1,4 +1,4 @@
-import React from "react";
+import React,{lazy} from "react";
 import { createRoot } from "react-dom/client";
 
 import {
@@ -8,22 +8,34 @@ import {
 
 import App from "./App";
 
-import Home from "./pages/Home";
-import Animales from "./pages/Animales";
-import Contacto from "./pages/Contacto";
-import Donar from "./pages/Donar";
-import Necesidades from "./pages/Nececidades";
-import DetalleAnimal from "./pages/DetalleAnimal";
+const Home=lazy(()=>import('./pages/Home'));
+const Animales=lazy(()=>import('./pages/Catalogo'));
+const Historias=lazy(()=>import('./pages/Comunidad').then(module=>({default:module.Historias})));
+const Organizacion=lazy(()=>import('./pages/Comunidad').then(module=>({default:module.Organizacion})));
+const Necesidades=lazy(()=>import('./pages/Comunidad').then(module=>({default:module.NecesidadesReales})));
+const SeguimientoSolicitud=lazy(()=>import('./pages/SeguimientoSolicitud'));
+const RestablecerPassword=lazy(()=>import('./admin/RestablecerPassword'));
+const ComunidadAdmin=lazy(()=>import('./admin/ComunidadAdmin'));
+const Contacto=lazy(()=>import('./pages/Contacto'));
+const Donar=lazy(()=>import('./pages/Donar'));
 
-import PanelSolicitudes from "./admin/PanelSolicitudes";
-import DetalleSolicitud from "./admin/DetalleSolicitud";
-import AdminLogin from "./admin/AdminLogin";
-import PanelAnimales from "./admin/PanelAnimales";
-import CrearAnimal from "./admin/CrearAnimal";
-import EditarAnimal from "./admin/EditarAnimal";
-import ChangePassword from "./admin/ChangePassword";
-import RegistrarOrganizacion from "./admin/RegisterOrganizacion";
+const DetalleAnimal=lazy(()=>import('./pages/DetalleAnimal'));
 
+const PanelSolicitudes=lazy(()=>import('./admin/PanelSolicitudes'));
+const DetalleSolicitud=lazy(()=>import('./admin/DetalleSolicitud'));
+const AdminLogin=lazy(()=>import('./admin/AdminLogin'));
+const PanelAnimales=lazy(()=>import('./admin/PanelAnimales'));
+const CrearAnimal=lazy(()=>import('./admin/CrearAnimal'));
+const EditarAnimal=lazy(()=>import('./admin/EditarAnimal'));
+const ChangePassword=lazy(()=>import('./admin/ChangePassword'));
+const RegistrarOrganizacion=lazy(()=>import('./admin/RegisterOrganizacion'));
+
+const MiActividad=lazy(()=>import('./pages/MiActividad'));
+const Avisos=lazy(()=>import('./pages/Avisos'));
+const PublicarAviso=lazy(()=>import('./pages/PublicarAviso'));
+const DetalleAviso=lazy(()=>import('./pages/DetalleAviso'));
+const GestionAviso=lazy(()=>import('./pages/GestionAviso'));
+const ModerarAvisos=lazy(()=>import('./admin/ModerarAvisos'));
 import PrivateRoute from "./components/PrivateRoute";
 
 import "./index.css";
@@ -34,6 +46,18 @@ const router = createBrowserRouter([
     element: <App />,
 
     children: [
+      {path:'mi-actividad',element:<MiActividad/>},
+      {path:'avisos',element:<Avisos/>},
+      {path:'avisos/nuevo',element:<PublicarAviso/>},
+      {path:'avisos/gestion/:token',element:<GestionAviso/>},
+      {path:'avisos/:id',element:<DetalleAviso/>},
+      {path:'admin/avisos',element:<PrivateRoute><ModerarAvisos/></PrivateRoute>},
+      {path:'favoritos',element:<Animales/>},
+      {path:'historias',element:<Historias/>},
+      {path:'organizaciones/:id',element:<Organizacion/>},
+      {path:'mi-solicitud/:token',element:<SeguimientoSolicitud/>},
+      {path:'admin/restablecer-password',element:<RestablecerPassword/>},
+      {path:'admin/comunidad',element:<PrivateRoute><ComunidadAdmin/></PrivateRoute>},
       // Página principal
       {
         index: true,

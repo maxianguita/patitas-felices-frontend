@@ -1,0 +1,5 @@
+User-agent: *
+Disallow: /admin/
+Disallow: /mi-solicitud/
+Disallow: /avisos/gestion/
+Disallow: /mi-actividad
